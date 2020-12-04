@@ -17,8 +17,8 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col"><strong>From</strong></th>
                     <th scope="col"><strong>Subject</strong></th>
+                    <th scope="col"><strong>To</strong></th>
                     <th scope="col"><strong>Date</strong></th>
                 </tr>
             </thead>
@@ -32,8 +32,8 @@
     <table class="table">
         <thead>
             <tr>
-                <th scope="col"><strong>To</strong></th>
                 <th scope="col"><strong>Subject</strong></th>
+                <th scope="col"><strong>From</strong></th>
                 <th scope="col"><strong>Date</strong></th>
             </tr>
         </thead>
@@ -74,11 +74,31 @@
 </div>
 <div id="email-detail">
     <div class="container">
-        <p id="sender"></p>
-        <div id="recipient"></div>
+        <p id="sender"> Sender:</p>
+        <div id="recipient">To:</div>
         <div id="time"></div>
-        <p><strong id="subject"></strong></p>
-        <div id="body"></div>
+        <p><strong id="subject">Subject:</strong></p>
+        <p id="body"></p>
+        <button id="archiving-button" class="btn btn-outline-primary">Archive</button>
+        <button id="unarchive-button" class="btn btn-outline-primary">Unarchive</button>
+        <button id="reply-button" class="btn btn-outline-primary">Reply</button>
+    </div>  
+</div>
+<div id ="reply-view">
+    <div class ="container">
+    <form id = "reply-form">
+        <div class = "form-group">
+            Recipient<input id ="reply-recipient" class="form-control">
+        </div>
+        <div class ="form-group">
+            Subject<input id = "reply-subject" class="form-control">
+        </div>
+        <div class = "form-group">
+            <textarea id = "reply-text"></textarea>
+        </div>
+        <button id="send-button" class="btn btn-outline-primary">Send</button>
+    </form>
+
     </div>
 </div>
 {% endblock %}
