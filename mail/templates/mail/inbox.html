@@ -12,18 +12,48 @@
 <hr>
 
 <div id="sent-view">
-    <h3>Sent</h3>
-    <div id="sent-body">
-        <ul id="sent-list">
-            <!-- content inserted by js -->
-        </ul>
+    <div class="container">
+        <h5>Sent</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col"><strong>From</strong></th>
+                    <th scope="col"><strong>Subject</strong></th>
+                    <th scope="col"><strong>Date</strong></th>
+                </tr>
+            </thead>
+            <tbody id="sent-list">
+            </tbody>
+        </table>
     </div>
 </div>
 <div id="archive-view">
-    <h3>Archive</h3>
+    <h5>Archive</h5>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col"><strong>To</strong></th>
+                <th scope="col"><strong>Subject</strong></th>
+                <th scope="col"><strong>Date</strong></th>
+            </tr>
+        </thead>
+        <tbody id="archive-list">
+        </tbody>
+    </table>
 </div>
 <div id="inbox-view">
     <h3>Inbox</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col"><strong>Subject</strong></th>
+                <th scope="col"><strong>From</strong></th>
+                <th scope="col"><strong>Date</strong></th>
+            <tr>
+        </thead>
+        <tbody id="inbox-list">
+        </tbody>
+    </table>
 </div>
 
 <div id="compose-view">
@@ -39,8 +69,17 @@
             <input class="form-control" id="compose-subject" placeholder="Subject">
         </div>
         <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
-        <input type="submit" class="btn btn-primary" />
+        <input type="submit" id="button" class="btn btn-primary" />
     </form>
+</div>
+<div id="email-detail">
+    <div class="container">
+        <p id="sender"></p>
+        <div id="recipient"></div>
+        <div id="time"></div>
+        <p><strong id="subject"></strong></p>
+        <div id="body"></div>
+    </div>
 </div>
 {% endblock %}
 
