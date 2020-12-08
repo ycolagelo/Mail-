@@ -9,6 +9,8 @@ const Pages = {
   REPLY: "reply",
 };
 
+let replyEventListener;
+
 document.addEventListener("DOMContentLoaded", function () {
   // Use buttons to toggle between views
   document
@@ -39,9 +41,9 @@ function clearEmailForm() {
   document.querySelector("#compose-body").value = "";
 }
 function clearReplyForm() {
-  document.querySelector("#reply-recipients").value = "";
+  document.querySelector("#reply-recipient").value = "";
   document.querySelector("#reply-subject").value = "";
-  document.querySelector("#reply-body").value = "";
+  document.querySelector("#reply-text").value = "";
 }
 
 function compose_email() {
@@ -81,6 +83,8 @@ function load_page(page, options = {}) {
   document.querySelector("#email-detail").style.display = "none";
   document.querySelector("#reply-view").style.display = "none";
 
+  console.log("load page called", page);
+
   if (page === Pages.SENT) {
     load_sent_view();
   } else if (page == Pages.INBOX) {
@@ -115,6 +119,8 @@ function load_archive_view() {
 
         tr.querySelector("a").addEventListener("click", (e) => {
           e.preventDefault();
+          tr.querySelector("a").disabled = true;
+          console.log("a");
           load_page(Pages.EMAIL, { id: email.id, showUnarchiveButton: true });
         });
 
@@ -145,6 +151,7 @@ function load_inbox_view() {
       `;
         tr.querySelector("a").addEventListener("click", (e) => {
           e.preventDefault();
+          tr.querySelector("a").disabled = true;
           load_page(Pages.EMAIL, {
             id: email.id,
             showArchiveButton: true,
@@ -181,6 +188,7 @@ function load_sent_view() {
 
         tr.querySelector("a").addEventListener("click", (e) => {
           e.preventDefault();
+          tr.querySelector("a").disabled = true;
           load_page(
             Pages.EMAIL,
             { id: email.id },
@@ -217,6 +225,7 @@ function load_email_view({
             archived: true,
           }),
         }).then((response) => load_page(Pages.INBOX));
+        // document.querySelector("#archiving-button").disabled = true;
       });
   } else if (showUnarchiveButton) {
     document.querySelector("#unarchive-button").style.visibility = "visible";
@@ -229,12 +238,15 @@ function load_email_view({
             archived: false,
           }),
         }).then((response) => load_page(Pages.INBOX));
+        // document.querySelector("#unarchive-button").disabled = true;
       });
   }
 
+  console.log("fetching email", id);
   fetch(`/emails/${id}`)
     .then((response) => response.json())
     .then((data) => {
+      console.log("response");
       console.log(data);
       document.querySelector("#sender").innerHTML = `Sender: ${data.sender}`;
       document.querySelector("#recipient").innerHTML = `To: ${data.recipients}`;
@@ -243,15 +255,27 @@ function load_email_view({
       document.querySelector("#body").innerHTML = data.body;
     });
 
-  document.querySelector("#reply-button").addEventListener("click", (e) => {
+  if (replyEventListener) {
+    document
+      .querySelector("#reply-button")
+      .removeEventListener("click", replyEventListener);
+  }
+  replyEventListener = (e) => {
+    console.log("clicked");
     e.preventDefault();
+    clearReplyForm();
+    document.querySelector("#reply-button").disabled = false;
     load_page(Pages.REPLY, { id });
-  });
+  };
+  document
+    .querySelector("#reply-button")
+    .addEventListener("click", replyEventListener);
 }
 
 function load_reply_view({ id }) {
   // document.querySelector("#email.detail").style.display = "none";
   document.querySelector("#reply-view").style.display = "block";
+  // clearReplyForm();
   clearReplyForm();
 
   fetch(`/emails/${id}`)
@@ -262,7 +286,10 @@ function load_reply_view({ id }) {
         "#reply-recipient"
       ).value = `Recipient: ${data.sender}`;
       let subject = data.subject;
-      if (subject.substring(0, 2) === "Re") {
+      if (
+        subject.substring(0, 2) === "Re" ||
+        subject.substring(0, 2) === "RE"
+      ) {
         document.querySelector("#reply-subject").value = subject;
       } else
         document.querySelector("#reply-subject").value = `Re: ${data.subject}`;
@@ -270,4 +297,5 @@ function load_reply_view({ id }) {
         "#reply-text"
       ).value = `On ${data.timestamp} ${data.sender} Wrote: ${data.body}`;
     });
+  // document.querySelector("#reply-button").disabled = true;
 }
