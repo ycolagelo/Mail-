@@ -6,6 +6,7 @@ const Pages = {
   ARCHIVE: "archive",
   COMPOSE: "compose",
   EMAIL: "email",
+  REPLY: "reply",
 };
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -144,7 +145,10 @@ function load_inbox_view() {
       `;
         tr.querySelector("a").addEventListener("click", (e) => {
           e.preventDefault();
-          load_page(Pages.EMAIL, { id: email.id, showArchiveButton: true });
+          load_page(Pages.EMAIL, {
+            id: email.id,
+            showArchiveButton: true,
+          });
 
           fetch(`/emails/${email.id}`, {
             method: "PUT",
@@ -196,6 +200,7 @@ function load_email_view({
   id,
   showArchiveButton = false,
   showUnarchiveButton = false,
+  showReplyButton = false,
 }) {
   document.querySelector("#email-detail").style.display = "block";
   document.querySelector("#archiving-button").style.visibility = "hidden";
@@ -226,6 +231,7 @@ function load_email_view({
         }).then((response) => load_page(Pages.INBOX));
       });
   }
+
   fetch(`/emails/${id}`)
     .then((response) => response.json())
     .then((data) => {
@@ -236,46 +242,32 @@ function load_email_view({
       document.querySelector("#subject").innerHTML = `Subject: ${data.subject}`;
       document.querySelector("#body").innerHTML = data.body;
     });
+
+  document.querySelector("#reply-button").addEventListener("click", (e) => {
+    e.preventDefault();
+    load_page(Pages.REPLY, { id });
+  });
 }
 
-// document.querySelector("#reply-button").addEventListener("click", (e) => {
-//   document.querySelector("#email-detail").style.display = "none";
-//   document.querySelector("#reply-view").style.display = "block";
-//   document.querySelector(
-//     "#reply-recipient"
-//   ).value = `Recipient: ${data.recipients[0]}`;
-//   let subject = data.subject;
-//   if (subject.substring(0, 2) == "Re") {
-//     document.querySelector("#reply-subject").value = subject;
-//   } else{
-//     document.querySelector(
-//       "#reply.subject"
-//     ).value = `Re: ${data.subject}`;
-//     document.querySelector(
-//       "#reply-text"
-//     ).innerHTML = `On ${data.timestamp} ${data.sender} Wrote: ${data.body}`;
-//   }
+function load_reply_view({ id }) {
+  // document.querySelector("#email.detail").style.display = "none";
+  document.querySelector("#reply-view").style.display = "block";
+  clearReplyForm();
 
-// function load_reply_view(id) {
-//   document.querySelector("#reply-view").style.display = "block";
-//   clearReplyForm();
-
-//   fetch(`/emails/${id}`)
-//     .then((response) => response.json())
-//     .then((data) => {
-//       console.log(data);
-//       document.querySelector(
-//         "#reply-recipient"
-//       ).innerHTML = `Recipient: ${data.recipients[0]}`;
-//       let subject = data.subject;
-//       if (subject.substring(0, 2) == "Re") {
-//         document.querySelector("#reply-subject").innerHTML = subject;
-//       } else
-//         document.querySelector(
-//           "#reply.subject"
-//         ).innerHTML = `Re: ${data.subject}`;
-//     });
-//   document.querySelector(
-//     "#reply-text"
-//   ).innerHTML = `On ${data.timestamp} ${data.sender} Wrote: ${data.body}`;
-// }
+  fetch(`/emails/${id}`)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      document.querySelector(
+        "#reply-recipient"
+      ).value = `Recipient: ${data.sender}`;
+      let subject = data.subject;
+      if (subject.substring(0, 2) === "Re") {
+        document.querySelector("#reply-subject").value = subject;
+      } else
+        document.querySelector("#reply-subject").value = `Re: ${data.subject}`;
+      document.querySelector(
+        "#reply-text"
+      ).value = `On ${data.timestamp} ${data.sender} Wrote: ${data.body}`;
+    });
+}
